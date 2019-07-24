@@ -45,7 +45,8 @@ public class Staff {
 	public String AcaPerfLevel;
 	public String TeaPerfLevel;
 	public String str_FTE;
-	public double FTE;
+	public Double FTE;
+	public Boolean cmptable;
 
 	public Staff() {
 		this.ID = "";
@@ -67,17 +68,20 @@ public class Staff {
 		this.AcaPerfLevel = "";
 		this.TeaPerfLevel = "";
 		this.str_FTE = "";
+		this.cmptable = true;// if there is error information
 	}
 
 	public String toString() {
 		String str = "";
-		str += this.employNumber + "\r";
-		str += "\t" + this.fullName + "\r";
-		str += "\t" + this.position + "\r";
-		str += "\t" + this.category + "\r";
-		str += "\t" + this.organization + "\r";
-		str += "\t" + this.level + "\r";
-		str += "\t" + this.research_only;
+		str += "EmployNumber:" + this.employNumber + "\r";
+		str += "  " + "FullName:" + this.fullName + "\r";
+		str += "  " + "Position:" + this.position + "\r";
+		str += "  " + "Category:" + this.category + "\r";
+		str += "  " + "Organization:" + this.organization + "\r";
+		str += "  " + "Level:" + this.level + "\r";
+		str += "  " + "Research_only:" + this.research_only + "\r";
+		str += "  " + "FTE:" + this.FTE + "\r";
+		str += "  " + "New:" + this.isNew;
 		return str;
 	}
 
@@ -109,35 +113,58 @@ public class Staff {
 
 	}
 
-	public void standarise() {
-		String[] names = Helper.parseStaffName(this.str_fullName);
-		this.firstName = names[0];
-		this.lastName = names[1];
-		this.anotherName = names[2];
-		this.fullName = this.getStaffFullName();
-		this.employNumber = Helper.formatEmployNumber(this.employNumber);
-		this.email = this.email.trim().toLowerCase();
-		this.category = Helper.convertString2Category(this.organization);
-		this.research_only = Helper.convertString2Bool(this.str_researchonly);
-		this.FTE = Double.parseDouble(this.str_FTE);
-		int startYear = Integer.parseInt(this.str_startDate.split("-")[2]);
-		int startMonth = Helper.convertMonth2int(this.str_startDate.split("-")[1]);
-		this.startYear = startYear;
-		this.startMonth = startMonth;
-		for (String year : coreParameters.years) {
-			if (Integer.parseInt(year) == this.startYear) {
-				this.isNew = true;
+	public void standarise() throws Exception {
+		try {
+			String[] names = Helper.parseStaffName(this.str_fullName);
+			this.firstName = names[0];
+			this.lastName = names[1];
+			this.anotherName = names[2];
+			this.fullName = this.getStaffFullName();
+			this.employNumber = Helper.formatEmployNumber(this.employNumber);
+			this.email = this.email.trim().toLowerCase();
+			this.category = Helper.convertString2Category(this.organization);
+			this.research_only = Helper.convertString2Bool(this.str_researchonly);
+			this.FTE = Double.parseDouble(this.str_FTE);
+			int startYear = Integer.parseInt(this.str_startDate.split("-")[2]);
+			int startMonth = Helper.convertMonth2int(this.str_startDate.split("-")[1]);
+			this.startYear = startYear;
+			this.startMonth = startMonth;
+			for (String year : coreParameters.years) {
+				if (Integer.parseInt(year) == this.startYear) {
+					this.isNew = true;
+				}
 			}
+			this.level = Helper.convertString2Level(this.str_level);
+			// exclude staff
+			exclude();
+			assertInfo();
+			assertCmptable();
+			saveInfo();
+		} catch (Exception e) {
+			throw e;
 		}
-		this.level = Helper.convertString2Level(this.str_level);
-		// exclude staff
-		// exclude();
-		saveInfo();
+	}
+
+	public void assertInfo() {
+		if (!this.research_only && this.position.contains("Chancellor") && this.position.contains("Postdoctoral"))
+			System.out.println(this.str_fullName + " is CPD but not research only.");
+	}
+
+	public void assertCmptable() {
+		if (this.category == CATEGORY.NONE)
+			this.cmptable = false;
+		if (this.level == LEVEL.NONE)
+			this.cmptable = false;
+		if (this.research_only == null)
+			this.cmptable = false;
+		if (this.FTE == null)
+			this.cmptable = false;
 	}
 
 	public void exclude() {
-		if (startYear >= Integer.parseInt(coreParameters.years[coreParameters.years.length - 1]) && startMonth >= 3)
+		if (startYear >= Integer.parseInt(coreParameters.years[coreParameters.years.length - 2]) && startMonth >= 3)
 			this.excluded = true;
+
 		if (this.position.contains("Industry"))
 			this.excluded = true;
 		if (this.level == LEVEL.A)
@@ -150,20 +177,25 @@ public class Staff {
 	}
 
 	public void adjustScore() {
-		if (this.research_only) {
-			if (this.position.contains("Chancellor's Postdoctoral"))
-				this.score /= 1.2;
-			else
-				this.score /= 1.8;
+		try {
+			if (this.research_only) {
+				if (this.position.contains("Chancellor") && this.position.contains("Postdoctoral"))
+					this.score /= 1.5;
+				else
+					this.score /= 1.8;
+			}
+		} catch (Exception e) {
+			System.out.println(this.employNumber + " " + this.str_researchonly);
 		}
-		if (this.isNew) {
-			int working_months = 0;
-			if (this.startYear == Integer.parseInt(coreParameters.years[0]))
-				working_months = 24 - this.startMonth;
-			else
-				working_months = 12 - this.startMonth;
-			this.score = this.score / (double) (working_months) * 12.0;
-		}
+
+//		if (this.isNew) {
+//			int working_months = 0;
+//			if (this.startYear == Integer.parseInt(coreParameters.years[0]))
+//				working_months = 24 - this.startMonth;
+//			else
+//				working_months = 12 - this.startMonth;
+//			this.score = this.score / (double) (working_months) * 12.0;
+//		}
 		if (this.str_level.equals("SSG"))
 			this.score *= 2;
 		this.score /= this.FTE;
@@ -175,7 +207,7 @@ public class Staff {
 	 * @param year
 	 * @return x1-x9 of the year
 	 */
-	public double[] getPerformanceData(String year) {
+	public double[] getOneYearAcaPerform(String year) {
 		double[] data = new double[] { 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 		double[] pub_by_types = new double[] { 0, 0, 0, 0 };
 		if (this.incomes_by_years.get(year) != null) {
@@ -233,7 +265,19 @@ public class Staff {
 			return 0;
 	}
 
-	public void calculateScoreA(double[] data) {
+	public double[] getAverAcaPerform() {
+		double[] data = new double[] { 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+		for (String year : coreParameters.years) {
+			double[] year_data = this.getOneYearAcaPerform(year);
+			for (int i = 0; i < data.length; i++)
+				data[i] += year_data[i];
+		}
+		for (int i = 0; i < data.length; i++)
+			data[i] /= (double) coreParameters.years.length;
+		return data;
+	}
+
+	public void setFinalAcaScore(double[] data) {
 		double score = 0;
 		try {
 			if (data.length != 9 || this.category == CATEGORY.NONE || this.level == LEVEL.NONE) {
@@ -254,23 +298,20 @@ public class Staff {
 				temp3 += GlobalValues.BENCHMARK_WEIGHT.get(this.category).get(this.level)[i] * data[i]
 						/ GlobalValues.BENCHMARK_VALUE.get(this.category).get(this.level)[i];
 			}
-			if (temp1 > 0.9)
-				temp1 = 0.9;
-			if (temp2 > 0.9)
-				temp2 = 0.9;
-			if (temp3 > 0.9)
-				temp3 = 0.9;
 			score = temp1 + temp2 + temp3;
 			this.score = score * 100;
 			this.adjustScore();
 		} catch (Exception e) {
 			e.printStackTrace();
+			this.cmptable = false;
 			this.score = 0;
+			System.out.println("Staff " + this.employNumber + " research score calculated fail.");
+			System.out.println(this);
 		}
 	}
 
 	public void merge(Staff source) {
-
+		// TODO
 	}
 
 	public double getIncomeX1(String year) {

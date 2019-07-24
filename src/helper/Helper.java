@@ -28,81 +28,85 @@ public class Helper {
 		return str;
 	}
 
-	public static double convertString2Double(String str) {
+	public static Double convertString2Double(String str) {
 		if (str == "")
-			return 0;
+			return 0.0;
 		else {
 			try {
-				return Double.parseDouble(str);
+				if (str.equals(""))
+					return 0.0;
+				else
+					return Double.parseDouble(str);
 			} catch (Exception e) {
-				return 0;
+				System.out.println("\"" + str + "\" can't be converted into double");
+				return null;
 			}
 		}
 	}
 
 	public static int convertString2Int(String str) {
-		if (str == "")
+		try {
+			return Integer.parseInt(str);
+		} catch (Exception e) {
+			System.out.println("\"" + str + "\" can't be converted into int");
 			return 0;
-		else {
-			try {
-				return Integer.parseInt(str);
-			} catch (Exception e) {
-				return 0;
-			}
 		}
+
 	}
 
 	public static Boolean convertString2Bool(String str) {
-		if (str == null || str == "")
+		try {
+			if (str == null || str == "")
+				return null;
+			str = str.toLowerCase();
+			if (str.contains("teaching") && str.contains("research"))
+				return false;
+			else
+				return true;
+		} catch (Exception e) {
+			System.out.print("\"" + str + "\" can't be converted to research only");
 			return null;
-		str = str.toLowerCase();
-		if (str.equalsIgnoreCase("Research Only"))
-			return true;
-		else if (str.equalsIgnoreCase("Teaching and Research"))
-			return false;
-		else
-			return null;
-	}
-
-	public static LEVEL convertString2Level(String str) {
-		if (str == null || str == "")
-			return LEVEL.NONE;
-		// str = str.toLowerCase();
-		switch (str) {
-		case "ACA.Level A":
-			return LEVEL.A;
-		case "ACA.Level B":
-			return LEVEL.B;
-		case "ACA.Level C":
-			return LEVEL.C;
-		case "ACA.Level D":
-			return LEVEL.D;
-		case "ACA.Level E":
-			return LEVEL.E;
-		case "SSG":
-			return LEVEL.E;
-		default:
-			return LEVEL.NONE;
 		}
 	}
 
-	public static CATEGORY convertString2Category(String str) {
-		if (str == null || str == "")
-			return CATEGORY.NONE;
-		str = str.toLowerCase();
-		if (str.equals("FEIT.School of Mechanical and Mechatronic Engineering".toLowerCase())
-				|| str.equals("FEIT.School of Civil and Environmental Engineering".toLowerCase())) {
-			return CATEGORY.ENGINEERING;
-		} else
-			return CATEGORY.IT;
-//		if (str.equals("FEIT.School of Software".toLowerCase())
-//				|| str.equals("FEIT.A/DRsch Centre for Artificial Intelligence".toLowerCase())
-//				|| str.equals("FEIT.A/DRsch Centre for Quantum Software and Information".toLowerCase())
-//				|| str.equals("FEIT.A/DRsch Advanced Analytics Institute".toLowerCase())
-//				|| str.equals("FEIT.Faculty of Engineering & Information Technology".toLowerCase())) {
-//			return CATEGORY.IT;
-//		} else
-//			return CATEGORY.ENGINEERING;
+	public static LEVEL convertString2Level(String str) throws Exception {
+		try {
+			if (str.toLowerCase().contains("ssg"))
+				return LEVEL.E;
+			else
+				switch (str) {
+				case "ACA.Level A":
+					return LEVEL.A;
+				case "ACA.Level B":
+					return LEVEL.B;
+				case "ACA.Level C":
+					return LEVEL.C;
+				case "ACA.Level D":
+					return LEVEL.D;
+				case "ACA.Level E":
+					return LEVEL.E;
+				default:
+					throw new Exception("\"" + str + "\" cant be converted into Level.");
+				}
+		} catch (Exception e) {
+			throw new Exception("\"" + str + "\" cant be converted into Level.");
+		}
+	}
+
+	public static CATEGORY convertString2Category(String str) throws Exception {
+		try {
+			if (str == null || str == "")
+				throw new Exception("\"" + str + "\" can't be converted into Category");
+			str = str.toLowerCase();
+			if (str.equals("FEIT.School of Mechanical and Mechatronic Engineering".toLowerCase())
+					|| str.equals("FEIT.School of Civil and Environmental Engineering".toLowerCase())) {
+				return CATEGORY.ENGINEERING;
+
+			} else
+				return CATEGORY.IT;
+		} catch (Exception e) {
+			throw new Exception("\"" + str + "\" can't be converted into Category");
+		}
 	}
 
 	public static String[] parseStaffName(String str_raw_name) {

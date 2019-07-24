@@ -4,9 +4,16 @@ import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+
+import org.w3c.dom.Document;
 
 import accessing.*;
 import core.*;
@@ -19,27 +26,63 @@ public class GenerateReport {
 
 	public static Map<String, Staff> staff_byID = new HashMap<String, Staff>();
 	public static Map<String, Staff> staff_byName = new HashMap<String, Staff>();
+	public static Map<String, Organization> organizations = new HashMap<String, Organization>();
 	public static Map<String, JournalPaper> journal_byID = new HashMap<String, JournalPaper>();
 	public static Map<String, JournalPaper> journal_byName = new HashMap<String, JournalPaper>();
+	public static String data_path;
+	public static boolean DEBUG = false;
 
 	public static void main(String[] args) {
 		try {
+			init();
 			getStaffInfo();
-//			parseJCR20();
-//			getResearchPerformance();
-//			writePerformance();
-			getTeachingPerformance();
-			writeTeachingPerformance();
-			for (Staff s : staff_byID.values()) {
-				if (s.employNumber.equalsIgnoreCase("101395")) {
-					for (Course c : s.courses)
-						System.out.println(c);
-
-				}
-			}
+			academicAssess();
+//			teachingAssess();
+//			for (Staff s : staff_byID.values()) {
+//				if (s.employNumber.equalsIgnoreCase("101395")) {
+//					for (Course c : s.courses)
+//						System.out.println(c);
+//
+//				}
+//			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+
+	public static void init() {
+		String config_path = "config.xml";
+		try {
+			File config = new File(config_path);
+			DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+			DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+			Document doc = dBuilder.parse(config);
+			System.out.println("Loading config...");
+			String len = doc.getElementsByTagName("data_root").item(0).getTextContent();
+			System.out.println(len);
+			System.out.println("......end");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	public static void academicAssess() {
+		parseJCR20();
+		getResearchPerformance();
+		for (Staff s : staff_byID.values()) {
+			s.setFinalAcaScore(s.getAverAcaPerform());
+		}
+		for (Organization org : organizations.values()) {
+			org.setAcaLevel();
+			if (DEBUG)
+				org.displayStaff();
+		}
+		writePerformance();
+	}
+
+	public static void teachingAssess() {
+		getTeachingPerformance();
+		writeTeachingPerformance();
 	}
 
 	/***
@@ -50,7 +93,7 @@ public class GenerateReport {
 		System.out.println("Load staff information start......");
 		// get staff information from general staff list
 		parseStaff();
-		System.out.println("Load staff information end ......");
+		System.out.println("......end");
 	}
 
 	public static void parseStaff() {
@@ -76,27 +119,38 @@ public class GenerateReport {
 			// process the return list
 			Iterator<Staff> iterator = list.iterator();
 			while (iterator.hasNext()) {
-				// get the row
-				Staff s = iterator.next();
-				current_row_index++;
-				s.standarise();
-				if (s.excluded)
-					continue;
-				if (staff_byID.get(s.employNumber) == null) {
-					staff_byID.put(s.employNumber, s);
-					if (staff_byName.get(s.fullName) == null)
-						staff_byName.put(s.fullName, s);
-					else {
-						Helper.mode_print("\tRow " + current_row_index + " found duplicate staff name: " + s.fullName);
-						processDuplicateStaff(staff_byName.get(s.fullName), s);
+				try {
+					// get the row
+					Staff s = iterator.next();
+					current_row_index++;
+					s.standarise();
+					if (s.excluded)
+						continue;
+					if (!organizations.containsKey(s.organization)) {
+						organizations.put(s.organization, new Organization(s.organization));
+						organizations.get(s.organization).addStaff(s);
+					} else {
+						organizations.get(s.organization).addStaff(s);
 					}
-				} else {
-					Helper.mode_print("\tRow " + current_row_index + " found duplicate staff id: " + s.employNumber);
-					processDuplicateStaff(staff_byID.get(s.employNumber), s);
+					if (staff_byID.get(s.employNumber) == null) {
+						staff_byID.put(s.employNumber, s);
+						if (staff_byName.get(s.fullName) == null)
+							staff_byName.put(s.fullName, s);
+						else {
+							Helper.mode_print(
+									"  Row " + current_row_index + " found duplicate staff name: " + s.fullName);
+							processDuplicateStaff(staff_byName.get(s.fullName), s);
+						}
+					} else {
+						Helper.mode_print(
+								"  Row " + current_row_index + " found duplicate staff id: " + s.employNumber);
+						processDuplicateStaff(staff_byID.get(s.employNumber), s);
+					}
+				} catch (Exception e) {
+					System.out.println("  Row " + current_row_index + " :" + e.getMessage());
 				}
 			}
 		} catch (Exception e) {
-			System.out.println("\tRow " + current_row_index + " :");
 			e.printStackTrace();
 		}
 	}
@@ -105,6 +159,7 @@ public class GenerateReport {
 	}
 
 	public static void parseJCR20() {
+		System.out.println("Load JCR information start......");
 		File des = new File("Sources\\JCR_journal_infomation");
 		if (des.exists()) {
 			if (des.isDirectory()) {
@@ -140,7 +195,7 @@ public class GenerateReport {
 						index_max++;
 					}
 				}
-				System.out.println("Load JCR end .......");
+				System.out.println("......end");
 			} else {
 				System.out.println("Not found JCR dictionary.");
 			}
@@ -165,11 +220,12 @@ public class GenerateReport {
 	public static void getTeachingPerformance() {
 		System.out.println("Load teaching data start ......");
 		ParseTeachingInfo("Sources\\Performance\\2018\\teaching.xlsx", 0, 0, false);
-		System.out.println("Load teaching data end ......");
+		System.out.println("......end");
 	}
 
 	public static void parseSupervision(String year, String file, int sheet_index, int title_index,
 			Boolean addNewStaff) {
+		System.out.println("Load supervision information start......");
 		if (!Helper.checkYear(year)) {
 			System.out.println("Specific year " + year + " is not available in core parameter");
 			System.exit(1);
@@ -213,9 +269,11 @@ public class GenerateReport {
 			System.out.println("Row " + current_row_index + " :");
 			e.printStackTrace();
 		}
+		System.out.println("......end");
 	}
 
 	public static void parseIncome(String year, String file, int sheet_index, int title_index, Boolean addNewStaff) {
+		System.out.println("Load income information start......");
 		if (!Helper.checkYear(year)) {
 			System.out.println("Specific year " + year + " is not available in core parameter");
 			System.exit(1);
@@ -242,20 +300,12 @@ public class GenerateReport {
 				String emNumber = Helper.formatEmployNumber(income.staffNumber);
 				if (staff_byID.get(emNumber) != null) {
 					Staff s = staff_byID.get(emNumber);
-					LEVEL new_level = Helper.convertString2Level(income.str_staffLevel);
-					// boolean new_researchOnly =
-					// Helper.convertString2Bool(income.str_staffResearchOnly);
 					if (s.incomes_by_years.get(year) == null) {
 						double[] income_value = new double[3];
 						income_value[0] = Helper.convertString2Double(income.x1) / 1000.0;
 						income_value[1] = Helper.convertString2Double(income.x2) / 1000.0;
 						income_value[2] = Helper.convertString2Double(income.x3) / 1000.0;
 						s.incomes_by_years.put(year, income_value);
-						if (new_level != LEVEL.NONE && s.level != new_level)
-							s.level = new_level;
-						// if( (Object)== null && s.research_only !=
-						// new_researchOnly)
-						// s.research_only = new_researchOnly;
 					} else
 						System.out.println(current_row_index + " get duplicate income " + emNumber);
 				} else if (addNewStaff) {
@@ -263,10 +313,10 @@ public class GenerateReport {
 				}
 			}
 		} catch (Exception e) {
-			System.out.println("Row " + current_row_index + " :");
-			e.printStackTrace();
+			System.out.println("Row " + current_row_index + " :" + e.getMessage());
+			// e.printStackTrace();
 		}
-
+		System.out.println("......end");
 	}
 
 	/**
@@ -276,6 +326,7 @@ public class GenerateReport {
 	 * @param file Publication file
 	 */
 	public static void parsePublication(String year, PUBLICATION_TYPE type, String file) {
+		System.out.println("Load publication information start......");
 		if (!Helper.checkYear(year)) {
 			System.out.println("Specific year " + year + " is not available in core parameter");
 			System.exit(1);
@@ -316,13 +367,15 @@ public class GenerateReport {
 						staff_byID.get(emNumber).publications_by_years.get(year).add(obj);
 					}
 				} else {
-					System.out.println(current_row_index + " get unclaimed pub " + emNumber);
+					// System.out.println(current_row_index + " get unclaimed
+					// pub " + emNumber);
 				}
 			}
 		} catch (Exception e) {
 			System.out.println("Row " + current_row_index + " :");
 			e.printStackTrace();
 		}
+		System.out.println("......end");
 	}
 
 	public static void writePerformance() {

@@ -89,7 +89,7 @@ public class GlobalValues {
 	public final static Map<CATEGORY, Map<LEVEL, Double[]>> BENCHMARK_VALUE = new HashMap<CATEGORY, Map<LEVEL, Double[]>>();
 	public final static Map<CATEGORY, Map<LEVEL, Double[]>> BENCHMARK_WEIGHT = new HashMap<CATEGORY, Map<LEVEL, Double[]>>();
 	static {
-		//income1, income2, income3, pubs, weights, JCR, cites, prin, co
+		// income1, income2, income3, pubs, weights, JCR, cites, prin, co
 		// The value is assigned from x1 to x9 then y1 to y3
 		BENCHMARK_VALUE_OF_IT_LEVEL.put(LEVEL.A,
 				new Double[] { 30.0, 15.0, 10.0, 4.0, 2.0, 1.0, 2.0, 0.2, 0.2, 1.0, 1.0, 1.0 });
