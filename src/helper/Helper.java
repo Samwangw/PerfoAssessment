@@ -28,8 +28,8 @@ public class Helper {
 		return str;
 	}
 
-	public static Double convertString2Double(String str) {
-		if (str == "")
+	public static Double convertString2Double(String str) throws Exception {
+		if (str == null)
 			return 0.0;
 		else {
 			try {
@@ -38,18 +38,18 @@ public class Helper {
 				else
 					return Double.parseDouble(str);
 			} catch (Exception e) {
-				System.out.println("\"" + str + "\" can't be converted into double");
-				return null;
+				throw new Exception("\"" + str + "\" can't be converted into double");
 			}
 		}
 	}
 
-	public static int convertString2Int(String str) {
+	public static int convertString2Int(String str) throws Exception {
+		if (str == "")
+			return 0;
 		try {
 			return Integer.parseInt(str);
 		} catch (Exception e) {
-			System.out.println("\"" + str + "\" can't be converted into int");
-			return 0;
+			throw new Exception("\"" + str + "\" can't be converted into int");
 		}
 
 	}
@@ -168,7 +168,7 @@ public class Helper {
 	}
 
 	public static void mode_print(Object o) {
-		if (coreParameters.isDebug)
+		if (coreParameters.DEBUG)
 			System.out.println(o);
 	}
 
