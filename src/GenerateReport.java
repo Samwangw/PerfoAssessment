@@ -110,7 +110,7 @@ public class GenerateReport {
 		int current_row_index = title_row_index;
 		try {
 			// get instance list of target class
-			ArrayList list = parser.parse(Class.forName("core.Staff"), data_path+"//Staff_information//staff.xlsx", 0,
+			ArrayList list = parser.parse(Class.forName("core.Staff"), data_path + "//Staff_information//staff.xlsx", 0,
 					title_row_index, map);
 			// process the return list
 			Iterator<Staff> iterator = list.iterator();
@@ -156,7 +156,7 @@ public class GenerateReport {
 
 	public static void parseJCR20() {
 		System.out.println("Load JCR information start......");
-		File des = new File(data_path+"//JCR_journal_infomation");
+		File des = new File(data_path + "//JCR_journal_infomation");
 		if (des.exists()) {
 			if (des.isDirectory()) {
 				System.out.println("Found JCR dictionary.");
@@ -199,23 +199,23 @@ public class GenerateReport {
 	}
 
 	public static void getResearchPerformance() {
-		parseIncome("2017", data_path+"//Performance//2017//income2.xlsx", 0, 1, false);
-		parseIncome("2018", data_path+"//Performance//2018//income2.xlsx", 0, 1, false);
-		parsePublication("2017", PUBLICATION_TYPE.CONFERENCE, data_path+"//Performance//2017//Conferences.xlsx");
-		parsePublication("2017", PUBLICATION_TYPE.JOURNAL, data_path+"//Performance//2017//Journal.xlsx");
-		parsePublication("2017", PUBLICATION_TYPE.BOOK, data_path+"//Performance//2017//Books.xlsx");
-		parsePublication("2017", PUBLICATION_TYPE.CHAPTER, data_path+"//Performance//2017//Chapters.xlsx");
-		parsePublication("2018", PUBLICATION_TYPE.CONFERENCE, data_path+"//Performance//2018//Conferences.xlsx");
-		parsePublication("2018", PUBLICATION_TYPE.JOURNAL, data_path+"//Performance//2018//Journal.xlsx");
-		parsePublication("2018", PUBLICATION_TYPE.BOOK, data_path+"//Performance//2018//Books.xlsx");
-		parsePublication("2018", PUBLICATION_TYPE.CHAPTER, data_path+"//Performance//2018//Chapters.xlsx");
-		parseSupervision("2017", data_path+"//Performance//2017//Benchmarks.xlsx", 4, 0, false);
-		parseSupervision("2018", data_path+"//Performance//2018//supervisor.xlsx", 2, 0, false);
+		parseIncome("2017", data_path + "//Performance//2017//income2.xlsx", 0, 1, false);
+		parseIncome("2018", data_path + "//Performance//2018//income2.xlsx", 0, 1, false);
+		parsePublication("2017", PUBLICATION_TYPE.CONFERENCE, data_path + "//Performance//2017//Conferences.xlsx");
+		parsePublication("2017", PUBLICATION_TYPE.JOURNAL, data_path + "//Performance//2017//Journal.xlsx");
+		parsePublication("2017", PUBLICATION_TYPE.BOOK, data_path + "//Performance//2017//Books.xlsx");
+		parsePublication("2017", PUBLICATION_TYPE.CHAPTER, data_path + "//Performance//2017//Chapters.xlsx");
+		parsePublication("2018", PUBLICATION_TYPE.CONFERENCE, data_path + "//Performance//2018//Conferences.xlsx");
+		parsePublication("2018", PUBLICATION_TYPE.JOURNAL, data_path + "//Performance//2018//Journal.xlsx");
+		parsePublication("2018", PUBLICATION_TYPE.BOOK, data_path + "//Performance//2018//Books.xlsx");
+		parsePublication("2018", PUBLICATION_TYPE.CHAPTER, data_path + "//Performance//2018//Chapters.xlsx");
+		parseSupervision("2017", data_path + "//Performance//2017//Benchmarks.xlsx", 4, 0, false);
+		parseSupervision("2018", data_path + "//Performance//2018//supervisor.xlsx", 2, 0, false);
 	}
 
 	public static void getTeachingPerformance() {
 		System.out.println("Load teaching data start ......");
-		ParseTeachingInfo(data_path+"//Performance//2018//teaching.xlsx", 0, 0, false);
+		ParseTeachingInfo(data_path + "//Performance//2018//teaching.xlsx", 0, 0, false);
 		System.out.println("......end");
 	}
 
@@ -401,13 +401,13 @@ public class GenerateReport {
 
 	public static void writePerformance() {
 		WriteExl writer = new WriteExl();
-		String path = report_path+"//Academic " + new Date().toGMTString().replace(':', '-') + ".xlsx";
+		String path = report_path + "//Academic " + Helper.formatDateTime(new Date()) + ".xlsx";
 		writer.write(path, staff_byID, staff_byName);
 	}
 
 	public static void writeTeachingPerformance() {
 		WriteExl writer = new WriteExl();
-		String path = report_path+"//Teaching " + new Date().toGMTString().replace(':', '-') + ".xlsx";
+		String path = report_path + "//Teaching " + Helper.formatDateTime(new Date()) + ".xlsx";
 		writer.writeTeaching(path, staff_byID);
 	}
 
@@ -465,8 +465,6 @@ public class GenerateReport {
 						if (staff_byID.get(teacherEmNumber) != null
 								&& !teacherEmNumber.equalsIgnoreCase(c.coordinator_id)) {
 							staff_byID.get(teacherEmNumber).courses.add(c);
-							// Helper.mode_print("add course " + c.course_id + "
-							// to " + teacherEmNumber);
 						}
 					}
 				}

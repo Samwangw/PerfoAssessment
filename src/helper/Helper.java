@@ -1,5 +1,8 @@
 package helper;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 import core.GlobalValues.CATEGORY;
 import core.GlobalValues.LEVEL;
 import core.coreParameters;
@@ -178,5 +181,10 @@ public class Helper {
 				return true;
 		}
 		return false;
+	}
+
+	public static String formatDateTime(Date d) {
+		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH-mm-ss");
+		return format.format(d);
 	}
 }
