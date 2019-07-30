@@ -58,9 +58,9 @@ public class Helper {
 	}
 
 	public static Boolean convertString2Bool(String str) {
+		if (str == null || str == "")
+			return null;
 		try {
-			if (str == null || str == "")
-				return null;
 			str = str.toLowerCase();
 			if (str.contains("teaching") && str.contains("research"))
 				return false;

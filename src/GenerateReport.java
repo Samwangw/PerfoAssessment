@@ -14,6 +14,9 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 import accessing.*;
 import core.*;
@@ -29,8 +32,10 @@ public class GenerateReport {
 	public static Map<String, Organization> organizations = new HashMap<String, Organization>();
 	public static Map<String, JournalPaper> journal_byID = new HashMap<String, JournalPaper>();
 	public static Map<String, JournalPaper> journal_byName = new HashMap<String, JournalPaper>();
+	public static Document doc = null;
 	public static String data_path;
 	public static String report_path;
+	public static NodeList filelist = null;
 	public static boolean DEBUG = false;
 
 	public static void main(String[] args) {
@@ -38,7 +43,7 @@ public class GenerateReport {
 			init();
 			getStaffInfo();
 			academicAssess();
-			teachingAssess();
+			// teachingAssess();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -50,12 +55,14 @@ public class GenerateReport {
 			File config = new File(config_path);
 			DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
 			DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-			Document doc = dBuilder.parse(config);
+			doc = dBuilder.parse(config);
 			System.out.println("Loading config...");
 			data_path = doc.getElementsByTagName("data_path").item(0).getTextContent();
 			System.out.println(data_path);
 			report_path = doc.getElementsByTagName("report_path").item(0).getTextContent();
 			System.out.println(report_path);
+			filelist = doc.getElementsByTagName("file");
+			System.out.println(filelist.getLength() + " files found.");
 			System.out.println("......end");
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -88,30 +95,30 @@ public class GenerateReport {
 	public static void getStaffInfo() {
 		System.out.println("Load staff information start......");
 		// get staff information from general staff list
-		parseStaff();
+		Node node = doc.getElementsByTagName("staff").item(0);
+		String filepath = ((Element) node).getElementsByTagName("path").item(0).getTextContent();
+		int sheetIndex = Integer.parseInt(((Element) node).getElementsByTagName("SheetIndex").item(0).getTextContent());
+		int titleRowIndex = Integer
+				.parseInt(((Element) node).getElementsByTagName("TitleRowIndex").item(0).getTextContent());
+		Map<String, String> map = new HashMap<String, String>();
+		NodeList mapnodelist = ((Element) ((Element) node).getElementsByTagName("mappings").item(0))
+				.getElementsByTagName("mapping");
+		for (int j = 0; j < mapnodelist.getLength(); j++) {
+			map.put(((Element) mapnodelist.item(j)).getElementsByTagName("ColumnTitle").item(0).getTextContent()
+					.toLowerCase(),
+					((Element) mapnodelist.item(j)).getElementsByTagName("ObjectProperty").item(0).getTextContent());
+		}
+		parseStaff(filepath, sheetIndex, titleRowIndex, map);
 		System.out.println("......end");
 	}
 
-	public static void parseStaff() {
+	public static void parseStaff(String file, int sheet_index, int title_index, Map<String, String> maps) {
 		ParseExl parser = new ParseExl();
-		// Setup the connection between column title and class field
-		Map<String, String> map = new HashMap<String, String>();
-		map.put("Employee Number".toLowerCase(), "employNumber");
-		map.put("Full Name".toLowerCase(), "str_fullName");
-		map.put("Status".toLowerCase(), "status");
-		map.put("Position Name".toLowerCase(), "position");
-		map.put("Organisation".toLowerCase(), "organization");
-		map.put("Function".toLowerCase(), "str_researchonly");
-		map.put("Grade".toLowerCase(), "str_level");
-		map.put("Start Date".toLowerCase(), "str_startDate");
-		map.put("FTE".toLowerCase(), "str_FTE");
-		map.put("Email Address".toLowerCase(), "email");
-		int title_row_index = 1;
-		int current_row_index = title_row_index;
+		int current_row_index = title_index;
 		try {
 			// get instance list of target class
-			ArrayList list = parser.parse(Class.forName("core.Staff"), data_path + "//Staff_information//staff.xlsx", 0,
-					title_row_index, map);
+			ArrayList list = parser.parse(Class.forName("core.Staff"), data_path + file, sheet_index, title_index,
+					maps);
 			// process the return list
 			Iterator<Staff> iterator = list.iterator();
 			while (iterator.hasNext()) {
@@ -199,18 +206,56 @@ public class GenerateReport {
 	}
 
 	public static void getResearchPerformance() {
-		parseIncome("2017", data_path + "//Performance//2017//income2.xlsx", 0, 1, false);
-		parseIncome("2018", data_path + "//Performance//2018//income2.xlsx", 0, 1, false);
-		parsePublication("2017", PUBLICATION_TYPE.CONFERENCE, data_path + "//Performance//2017//Conferences.xlsx");
-		parsePublication("2017", PUBLICATION_TYPE.JOURNAL, data_path + "//Performance//2017//Journal.xlsx");
-		parsePublication("2017", PUBLICATION_TYPE.BOOK, data_path + "//Performance//2017//Books.xlsx");
-		parsePublication("2017", PUBLICATION_TYPE.CHAPTER, data_path + "//Performance//2017//Chapters.xlsx");
-		parsePublication("2018", PUBLICATION_TYPE.CONFERENCE, data_path + "//Performance//2018//Conferences.xlsx");
-		parsePublication("2018", PUBLICATION_TYPE.JOURNAL, data_path + "//Performance//2018//Journal.xlsx");
-		parsePublication("2018", PUBLICATION_TYPE.BOOK, data_path + "//Performance//2018//Books.xlsx");
-		parsePublication("2018", PUBLICATION_TYPE.CHAPTER, data_path + "//Performance//2018//Chapters.xlsx");
-		parseSupervision("2017", data_path + "//Performance//2017//Benchmarks.xlsx", 4, 0, false);
-		parseSupervision("2018", data_path + "//Performance//2018//supervisor.xlsx", 2, 0, false);
+		if (filelist == null) {
+			System.out.println("No data file found");
+		}
+		for (int i = 0; i < filelist.getLength(); i++) {
+			Node node = filelist.item(i);
+			String filepath = ((Element) node).getElementsByTagName("path").item(0).getTextContent();
+			String year = ((Element) node).getElementsByTagName("year").item(0).getTextContent();
+			String type = ((Element) node).getElementsByTagName("type").item(0).getTextContent();
+			int sheetIndex = Integer
+					.parseInt(((Element) node).getElementsByTagName("SheetIndex").item(0).getTextContent());
+			int titleRowIndex = Integer
+					.parseInt(((Element) node).getElementsByTagName("TitleRowIndex").item(0).getTextContent());
+			Map<String, String> map = new HashMap<String, String>();
+			NodeList mapnodelist = ((Element) ((Element) node).getElementsByTagName("mappings").item(0))
+					.getElementsByTagName("mapping");
+			for (int j = 0; j < mapnodelist.getLength(); j++) {
+				map.put(((Element) mapnodelist.item(j)).getElementsByTagName("ColumnTitle").item(0).getTextContent()
+						.toLowerCase(),
+						((Element) mapnodelist.item(j)).getElementsByTagName("ObjectProperty").item(0)
+								.getTextContent());
+			}
+			if (type.equals("1"))
+				parseIncome(year, data_path + filepath, sheetIndex, titleRowIndex, map, false);
+			else if (type.equals("21")) {
+				parsePublication(year, PUBLICATION_TYPE.CONFERENCE, data_path + filepath, sheetIndex, titleRowIndex,
+						map);
+			} else if (type.equals("22")) {
+				parsePublication(year, PUBLICATION_TYPE.JOURNAL, data_path + filepath, sheetIndex, titleRowIndex, map);
+			} else if (type.equals("23")) {
+				parsePublication(year, PUBLICATION_TYPE.BOOK, data_path + filepath, sheetIndex, titleRowIndex, map);
+			} else if (type.equals("24")) {
+				parsePublication(year, PUBLICATION_TYPE.CHAPTER, data_path + filepath, sheetIndex, titleRowIndex, map);
+			} else if (type.equals("3")) {
+				parseSupervision(year, data_path + filepath, sheetIndex, titleRowIndex, map, false);
+			} else {
+				System.out.println("Not known file type: " + type);
+			}
+		}
+//		parseIncome("2017", data_path + "//Performance//2017//income2.xlsx", 0, 1, false);
+//		parseIncome("2018", data_path + "//Performance//2018//income2.xlsx", 0, 1, false);
+//		parsePublication("2017", PUBLICATION_TYPE.CONFERENCE, data_path + "//Performance//2017//Conferences.xlsx");
+//		parsePublication("2017", PUBLICATION_TYPE.JOURNAL, data_path + "//Performance//2017//Journal.xlsx");
+//		parsePublication("2017", PUBLICATION_TYPE.BOOK, data_path + "//Performance//2017//Books.xlsx");
+//		parsePublication("2017", PUBLICATION_TYPE.CHAPTER, data_path + "//Performance//2017//Chapters.xlsx");
+//		parsePublication("2018", PUBLICATION_TYPE.CONFERENCE, data_path + "//Performance//2018//Conferences.xlsx");
+//		parsePublication("2018", PUBLICATION_TYPE.JOURNAL, data_path + "//Performance//2018//Journal.xlsx");
+//		parsePublication("2018", PUBLICATION_TYPE.BOOK, data_path + "//Performance//2018//Books.xlsx");
+//		parsePublication("2018", PUBLICATION_TYPE.CHAPTER, data_path + "//Performance//2018//Chapters.xlsx");
+//		parseSupervision("2017", data_path + "//Performance//2017//Benchmarks.xlsx", 4, 0, false);
+//		parseSupervision("2018", data_path + "//Performance//2018//supervisor.xlsx", 2, 0, false);
 	}
 
 	public static void getTeachingPerformance() {
@@ -220,22 +265,17 @@ public class GenerateReport {
 	}
 
 	public static void parseSupervision(String year, String file, int sheet_index, int title_index,
-			Boolean addNewStaff) {
+			Map<String, String> maps, Boolean addNewStaff) {
 		System.out.println("Load supervision information start......");
 		if (!Helper.checkYear(year)) {
 			System.out.println("Specific year " + year + " is not available in core parameter");
 			System.exit(1);
 		}
 		ParseExl parser = new ParseExl();
-		// Setup the connection between column title and class field
-		Map<String, String> map = new HashMap<String, String>();
-		map.put("id".toLowerCase(), "staffNumber");
-		map.put("principal".toLowerCase(), "primary");
-		map.put("Co".toLowerCase(), "co");
 		int current_row_index = title_index;
 		try {
 			// get instance list of target class
-			ArrayList list = parser.parse(Class.forName("core.Student"), file, sheet_index, title_index, map);
+			ArrayList list = parser.parse(Class.forName("core.Student"), file, sheet_index, title_index, maps);
 			// process the return list
 			Iterator<Student> iterator = list.iterator();
 			while (iterator.hasNext()) {
@@ -275,24 +315,18 @@ public class GenerateReport {
 		System.out.println("......end");
 	}
 
-	public static void parseIncome(String year, String file, int sheet_index, int title_index, Boolean addNewStaff) {
-		System.out.println("Load income information start......");
+	public static void parseIncome(String year, String file, int sheet_index, int title_index, Map<String, String> maps,
+			Boolean addNewStaff) {
+		System.out.println("Load income information " + file + " start......");
 		if (!Helper.checkYear(year)) {
 			System.out.println("Specific year " + year + " is not available in core parameter");
 			System.exit(1);
 		}
 		ParseExl parser = new ParseExl();
-		// Setup the connection between column title and class field
-		Map<String, String> map = new HashMap<String, String>();
-		map.put("id".toLowerCase(), "staffNumber");
-		map.put("Staff Name".toLowerCase(), "staffName");
-		map.put("x1".toLowerCase(), "x1");
-		map.put("x2".toLowerCase(), "x2");
-		map.put("x3".toLowerCase(), "x3");
 		int current_row_index = title_index;
 		try {
 			// get instance list of target class
-			ArrayList list = parser.parse(Class.forName("core.Income"), file, sheet_index, title_index, map);
+			ArrayList list = parser.parse(Class.forName("core.Income"), file, sheet_index, title_index, maps);
 			// process the return list
 			Iterator<Income> iterator = list.iterator();
 			while (iterator.hasNext()) {
@@ -341,25 +375,18 @@ public class GenerateReport {
 	 * @param type Publication type
 	 * @param file Publication file
 	 */
-	public static void parsePublication(String year, PUBLICATION_TYPE type, String file) {
+	public static void parsePublication(String year, PUBLICATION_TYPE type, String file, int sheetIndex,
+			int titleRowIndex, Map<String, String> maps) {
 		System.out.println("Load publication information start......");
 		if (!Helper.checkYear(year)) {
 			System.out.println("Specific year " + year + " is not available in core parameter");
 			System.exit(1);
 		}
 		ParseExl parser = new ParseExl();
-		// Setup the connection between column title and class field
-		Map<String, String> map = new HashMap<String, String>();
-		map.put("username".toLowerCase(), "authorStaffNumber");
-		map.put("name".toLowerCase(), "authorName");
-		map.put("Authors".toLowerCase(), "nameOfAuthors");
-		map.put("Times cited (Scopus)".toLowerCase(), "str_citation");
-		map.put("Canonical journal title".toLowerCase(), "jour_title");
-		int title_row_index = 0;
-		int current_row_index = title_row_index;
+		int current_row_index = titleRowIndex;
 		try {
 			// get instance list of target class
-			ArrayList list = parser.parse(Class.forName("core.Publication"), file, 0, 0, map);
+			ArrayList list = parser.parse(Class.forName("core.Publication"), file, 0, 0, maps);
 			Iterator<Publication> iterator = list.iterator();
 			// process the return list
 			while (iterator.hasNext()) {
@@ -370,7 +397,7 @@ public class GenerateReport {
 					obj.authorName = obj.authorName.toLowerCase();
 					if (staff_byID.get(emNumber) != null) {
 						obj.pubTime = year;
-						obj.type = type;
+						// obj.type = type;
 						obj.citation = Helper.convertString2Double(obj.str_citation);
 						obj.jour_title = Helper.formatJournalTitle(obj.jour_title);
 						if (journal_byName.get(obj.jour_title) != null)

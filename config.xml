@@ -1,6 +1,330 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <root>
   <data_path>data</data_path>
   <report_path>report</report_path>
+
+  <staff>
+  <path>//Staff_information//staff.xlsx</path>
+  <SheetIndex>0</SheetIndex>
+  <TitleRowIndex>1</TitleRowIndex>
+  <mappings>
+  	<mapping>
+  	<ColumnTitle>Employee Number</ColumnTitle>
+  	<ObjectProperty>employNumber</ObjectProperty></mapping>
+  	<mapping>
+  	<ColumnTitle>Full Name</ColumnTitle>
+  	<ObjectProperty>str_fullName</ObjectProperty></mapping>
+  	<mapping>
+  	<ColumnTitle>Status</ColumnTitle>
+  	<ObjectProperty>status</ObjectProperty></mapping>
+  	<mapping>
+  	<ColumnTitle>Position Name</ColumnTitle>
+  	<ObjectProperty>position</ObjectProperty></mapping>
+  	<mapping>
+  	<ColumnTitle>Organisation</ColumnTitle>
+  	<ObjectProperty>organization</ObjectProperty></mapping>
+  	<mapping>
+  	<ColumnTitle>Function</ColumnTitle>
+  	<ObjectProperty>str_researchonly</ObjectProperty></mapping>
+  	<mapping>
+  	<ColumnTitle>Grade</ColumnTitle>
+  	<ObjectProperty>str_level</ObjectProperty></mapping>
+  	<mapping>
+  	<ColumnTitle>Start Date</ColumnTitle>
+  	<ObjectProperty>str_startDate</ObjectProperty></mapping>
+  	<mapping>
+  	<ColumnTitle>FTE</ColumnTitle>
+  	<ObjectProperty>str_FTE</ObjectProperty></mapping>
+  	<mapping>
+  	<ColumnTitle>Email Address</ColumnTitle>
+  	<ObjectProperty>email</ObjectProperty></mapping>
+  </mappings>
+  </staff>
+  
+  <file>
+  <year>2017</year>
+  <path>//Performance//2017//income2.xlsx</path>
+  <type>1</type><SheetIndex>0</SheetIndex>
+  <TitleRowIndex>1</TitleRowIndex><mappings>
+  <mapping>
+  <ColumnTitle>id</ColumnTitle>
+  <ObjectProperty>staffNumber</ObjectProperty></mapping>
+  <mapping>
+  <ColumnTitle>Staff Name</ColumnTitle>
+  <ObjectProperty>staffName</ObjectProperty></mapping>
+  <mapping>
+  <ColumnTitle>x1</ColumnTitle>
+  <ObjectProperty>x1</ObjectProperty></mapping>
+  <mapping>
+  <ColumnTitle>x2</ColumnTitle>
+  <ObjectProperty>x2</ObjectProperty></mapping>
+  <mapping>
+  <ColumnTitle>x3</ColumnTitle>
+  <ObjectProperty>x3</ObjectProperty></mapping>
+  </mappings>
+  </file>
+  
+  <file>
+  <year>2018</year>
+  <path>//Performance//2018//income2.xlsx</path>
+  <type>1</type>
+  <SheetIndex>0</SheetIndex>
+  <TitleRowIndex>1</TitleRowIndex>
+  <mappings>
+  	<mapping>
+  	<ColumnTitle>id</ColumnTitle>
+  	<ObjectProperty>staffNumber</ObjectProperty></mapping>
+  	<mapping>
+  	<ColumnTitle>Staff Name</ColumnTitle>
+  	<ObjectProperty>staffName</ObjectProperty></mapping>
+  	<mapping>
+  	<ColumnTitle>x1</ColumnTitle>
+  	<ObjectProperty>x1</ObjectProperty></mapping>
+  	<mapping>
+  	<ColumnTitle>x2</ColumnTitle>
+  	<ObjectProperty>x2</ObjectProperty></mapping>
+  	<mapping>
+  	<ColumnTitle>x3</ColumnTitle>
+  	<ObjectProperty>x3</ObjectProperty></mapping>
+  </mappings>
+  </file>
+  
+  <file>
+  <year>2017</year>
+  <path>//Performance//2017//Conferences.xlsx</path>
+  <type>21</type>
+  <SheetIndex>0</SheetIndex>
+  <TitleRowIndex>0</TitleRowIndex>
+  <mappings>
+  	<mapping>
+  	<ColumnTitle>username</ColumnTitle>
+  	<ObjectProperty>authorStaffNumber</ObjectProperty></mapping>
+  	<mapping>
+  	<ColumnTitle>name</ColumnTitle>
+  	<ObjectProperty>authorName</ObjectProperty></mapping>
+  	<mapping>
+  	<ColumnTitle>Authors</ColumnTitle>
+  	<ObjectProperty>nameOfAuthors</ObjectProperty></mapping>
+  	<mapping>
+  	<ColumnTitle>Times cited (Scopus)</ColumnTitle>
+  	<ObjectProperty>str_citation</ObjectProperty></mapping>
+  	<mapping>
+  	<ColumnTitle>Canonical journal title</ColumnTitle>
+  	<ObjectProperty>jour_title</ObjectProperty></mapping>
+  </mappings>
+  </file>
+  
+  <file>
+  <year>2018</year>
+  <path>//Performance//2018//Conferences.xlsx</path>
+  <type>21</type>
+  <SheetIndex>0</SheetIndex>
+  <TitleRowIndex>0</TitleRowIndex>
+  <mappings>
+  	<mapping>
+  	<ColumnTitle>username</ColumnTitle>
+  	<ObjectProperty>authorStaffNumber</ObjectProperty></mapping>
+  	<mapping>
+  	<ColumnTitle>name</ColumnTitle>
+  	<ObjectProperty>authorName</ObjectProperty></mapping>
+  	<mapping>
+  	<ColumnTitle>Authors</ColumnTitle>
+  	<ObjectProperty>nameOfAuthors</ObjectProperty></mapping>
+  	<mapping>
+  	<ColumnTitle>Times cited (Scopus)</ColumnTitle>
+  	<ObjectProperty>str_citation</ObjectProperty></mapping>
+  	<mapping>
+  	<ColumnTitle>Canonical journal title</ColumnTitle>
+  	<ObjectProperty>jour_title</ObjectProperty></mapping>
+  </mappings>
+  </file>
+  
+  <file>
+  <year>2017</year>
+  <path>//Performance//2017//Journal.xlsx</path>
+  <type>22</type>
+  <SheetIndex>0</SheetIndex>
+  <TitleRowIndex>0</TitleRowIndex>
+  <mappings>
+  	<mapping>
+  	<ColumnTitle>username</ColumnTitle>
+  	<ObjectProperty>authorStaffNumber</ObjectProperty></mapping>
+  	<mapping>
+  	<ColumnTitle>name</ColumnTitle>
+  	<ObjectProperty>authorName</ObjectProperty></mapping>
+  	<mapping>
+  	<ColumnTitle>Authors</ColumnTitle>
+  	<ObjectProperty>nameOfAuthors</ObjectProperty></mapping>
+  	<mapping>
+  	<ColumnTitle>Times cited (Scopus)</ColumnTitle>
+  	<ObjectProperty>str_citation</ObjectProperty></mapping>
+  	<mapping>
+  	<ColumnTitle>Canonical journal title</ColumnTitle>
+  	<ObjectProperty>jour_title</ObjectProperty></mapping>
+  </mappings>
+  </file>
+  
+  <file>
+  <year>2018</year>
+  <path>//Performance//2018//Journal.xlsx</path>
+  <type>22</type>
+  <SheetIndex>0</SheetIndex>
+  <TitleRowIndex>0</TitleRowIndex>
+  <mappings>
+  	<mapping>
+  	<ColumnTitle>username</ColumnTitle>
+  	<ObjectProperty>authorStaffNumber</ObjectProperty></mapping>
+  	<mapping>
+  	<ColumnTitle>name</ColumnTitle>
+  	<ObjectProperty>authorName</ObjectProperty></mapping>
+  	<mapping>
+  	<ColumnTitle>Authors</ColumnTitle>
+  	<ObjectProperty>nameOfAuthors</ObjectProperty></mapping>
+  	<mapping>
+  	<ColumnTitle>Times cited (Scopus)</ColumnTitle>
+  	<ObjectProperty>str_citation</ObjectProperty></mapping>
+  	<mapping>
+  	<ColumnTitle>Canonical journal title</ColumnTitle>
+  	<ObjectProperty>jour_title</ObjectProperty></mapping>
+  </mappings>
+  </file>
+  
+  <file>
+  <year>2017</year>
+  <path>//Performance//2017//Books.xlsx</path>
+  <type>23</type>
+  <SheetIndex>0</SheetIndex>
+  <TitleRowIndex>0</TitleRowIndex>
+  <mappings>
+  	<mapping>
+  	<ColumnTitle>username</ColumnTitle>
+  	<ObjectProperty>authorStaffNumber</ObjectProperty></mapping>
+  	<mapping>
+  	<ColumnTitle>name</ColumnTitle>
+  	<ObjectProperty>authorName</ObjectProperty></mapping>
+  	<mapping>
+  	<ColumnTitle>Authors</ColumnTitle>
+  	<ObjectProperty>nameOfAuthors</ObjectProperty></mapping>
+  	<mapping>
+  	<ColumnTitle>Times cited (Scopus)</ColumnTitle>
+  	<ObjectProperty>str_citation</ObjectProperty></mapping>
+  	<mapping>
+  	<ColumnTitle>Canonical journal title</ColumnTitle>
+  	<ObjectProperty>jour_title</ObjectProperty></mapping>
+  </mappings>
+  </file>
+  
+  <file>
+  <year>2018</year>
+  <path>//Performance//2018//Books.xlsx</path>
+  <type>23</type>
+  <SheetIndex>0</SheetIndex>
+  <TitleRowIndex>0</TitleRowIndex>
+  <mappings>
+  	<mapping>
+  	<ColumnTitle>username</ColumnTitle>
+  	<ObjectProperty>authorStaffNumber</ObjectProperty></mapping>
+  	<mapping>
+  	<ColumnTitle>name</ColumnTitle>
+  	<ObjectProperty>authorName</ObjectProperty></mapping>
+  	<mapping>
+  	<ColumnTitle>Authors</ColumnTitle>
+  	<ObjectProperty>nameOfAuthors</ObjectProperty></mapping>
+  	<mapping>
+  	<ColumnTitle>Times cited (Scopus)</ColumnTitle>
+  	<ObjectProperty>str_citation</ObjectProperty></mapping>
+  	<mapping>
+  	<ColumnTitle>Canonical journal title</ColumnTitle>
+  	<ObjectProperty>jour_title</ObjectProperty></mapping>
+  </mappings>
+  </file>
+  
+  <file>
+  <year>2017</year>
+  <path>//Performance//2017//Chapters.xlsx</path>
+  <type>24</type>
+  <SheetIndex>0</SheetIndex>
+  <TitleRowIndex>0</TitleRowIndex>
+  <mappings>
+  	<mapping>
+  	<ColumnTitle>username</ColumnTitle>
+  	<ObjectProperty>authorStaffNumber</ObjectProperty></mapping>
+  	<mapping>
+  	<ColumnTitle>name</ColumnTitle>
+  	<ObjectProperty>authorName</ObjectProperty></mapping>
+  	<mapping>
+  	<ColumnTitle>Authors</ColumnTitle>
+  	<ObjectProperty>nameOfAuthors</ObjectProperty></mapping>
+  	<mapping>
+  	<ColumnTitle>Times cited (Scopus)</ColumnTitle>
+  	<ObjectProperty>str_citation</ObjectProperty></mapping>
+  	<mapping>
+  	<ColumnTitle>Canonical journal title</ColumnTitle>
+  	<ObjectProperty>jour_title</ObjectProperty></mapping>
+  </mappings>
+  </file>
+  
+  <file>
+  <year>2018</year>
+  <path>//Performance//2018//Chapters.xlsx</path>
+  <type>24</type>
+  <SheetIndex>0</SheetIndex>
+  <TitleRowIndex>0</TitleRowIndex>
+  <mappings>
+  	<mapping>
+  	<ColumnTitle>username</ColumnTitle>
+  	<ObjectProperty>authorStaffNumber</ObjectProperty></mapping>
+  	<mapping>
+  	<ColumnTitle>name</ColumnTitle>
+  	<ObjectProperty>authorName</ObjectProperty></mapping>
+  	<mapping>
+  	<ColumnTitle>Authors</ColumnTitle>
+  	<ObjectProperty>nameOfAuthors</ObjectProperty></mapping>
+  	<mapping>
+  	<ColumnTitle>Times cited (Scopus)</ColumnTitle>
+  	<ObjectProperty>str_citation</ObjectProperty></mapping>
+  	<mapping>
+  	<ColumnTitle>Canonical journal title</ColumnTitle>
+  	<ObjectProperty>jour_title</ObjectProperty></mapping>
+  </mappings>
+  </file>
+  
+  <file>
+  <year>2017</year>
+  <path>//Performance//2017//Benchmarks.xlsx</path>
+  <type>3</type>
+  <SheetIndex>4</SheetIndex>
+  <TitleRowIndex>0</TitleRowIndex>
+  <mappings>
+  	<mapping>
+  	<ColumnTitle>id</ColumnTitle>
+  	<ObjectProperty>staffNumber</ObjectProperty></mapping>
+  	<mapping>
+  	<ColumnTitle>principal</ColumnTitle>
+  	<ObjectProperty>primary</ObjectProperty></mapping>
+  	<mapping>
+  	<ColumnTitle>Co</ColumnTitle>
+  	<ObjectProperty>co</ObjectProperty></mapping>
+  </mappings>
+  </file>
+  
+  <file>
+  <year>2018</year>
+  <path>//Performance//2018//supervisor.xlsx</path>
+  <type>3</type>
+  <SheetIndex>2</SheetIndex>
+  <TitleRowIndex>0</TitleRowIndex>
+  <mappings>
+  	<mapping>
+  	<ColumnTitle>id</ColumnTitle>
+  	<ObjectProperty>staffNumber</ObjectProperty></mapping>
+  	<mapping>
+  	<ColumnTitle>principal</ColumnTitle>
+  	<ObjectProperty>primary</ObjectProperty></mapping>
+  	<mapping>
+  	<ColumnTitle>Co</ColumnTitle>
+  	<ObjectProperty>co</ObjectProperty></mapping>
+  </mappings>
+  </file>
+
 </root>
